@@ -1,0 +1,79 @@
+@startgantt
+saturday are closed
+sunday are closed
+project starts 2019/12/03
+printscale weekly
+[Today] happens at 2020/03/03
+
+[Rev.IO Prod Catalog Due] happens at 2020/02/24
+
+[FTP user management service] as [milestone_226] starts 2019/12/03 
+[FTP user management service] ends 2020/03/03
+[FTP user management service] as [milestone_226] is colored in Magenta
+
+[Gilbert-Orca Migration] as [milestone_148] starts 2019/11/20 
+[Gilbert-Orca Migration] ends 2020/03/03
+[Gilbert-Orca Migration] as [milestone_148] is colored in Magenta
+
+[Velocloud to Connectwise sync] as [milestone_181] starts 2019/12/02 
+[Velocloud to Connectwise sync] ends 2020/02/20
+[Velocloud to Connectwise sync] as [milestone_181] is colored in LightGrey
+
+[Long-term storage of CDR and archival of raw CDR] as [milestone_151] starts 2020/01/07 
+[Long-term storage of CDR and archival of raw CDR] ends 2020/03/31
+[Long-term storage of CDR and archival of raw CDR] as [milestone_151] is colored in LightGreen
+
+[Telecom Ticketing] as [milestone_184] starts 2020/01/22 
+[Telecom Ticketing] ends 2020/05/01
+[Telecom Ticketing] as [milestone_184] is colored in LightGreen
+
+[DID/TF Inventory APIs & Microservices] as [milestone_207] starts 2020/03/02 
+[DID/TF Inventory APIs & Microservices] ends 2020/04/27
+[DID/TF Inventory APIs & Microservices] as [milestone_207] is colored in Pink
+
+[Customer Portal] as [milestone_209] starts 2020/03/02 
+[Customer Portal] ends 2020/07/31
+[Customer Portal] as [milestone_209] is colored in Pink
+
+[Reporting] as [milestone_183] starts 2020/05/04 
+[Reporting] ends 2020/07/31
+[Reporting] as [milestone_183] is colored in LightBlue
+
+[TF Provisioning] as [milestone_211] starts 2020/07/01 
+[TF Provisioning] ends 2020/10/30
+[TF Provisioning] as [milestone_211] is colored in LightBlue
+
+[DID Provisioning] as [milestone_210] starts 2020/04/06 
+[DID Provisioning] ends 2020/08/31
+[DID Provisioning] as [milestone_210] is colored in LightBlue
+
+[Network Access Inventory] as [milestone_215] starts 2020/09/01 
+[Network Access Inventory] ends 2020/12/31
+[Network Access Inventory] as [milestone_215] is colored in LightBlue
+
+[Whitelabel Agent Portal] as [milestone_216] starts 2020/06/01 
+[Whitelabel Agent Portal] ends 2020/10/30
+[Whitelabel Agent Portal] as [milestone_216] is colored in LightBlue
+
+[Customer-facing APIs] as [milestone_214] starts 2020/06/01 
+[Customer-facing APIs] ends 2020/12/31
+[Customer-facing APIs] as [milestone_214] is colored in LightBlue
+
+[Customer Developer Portal] as [milestone_217] starts 2020/09/01 
+[Customer Developer Portal] ends 2020/11/30
+[Customer Developer Portal] as [milestone_217] is colored in LightBlue
+
+[UCaasS Frontend] as [milestone_213] is colored in LightBlue
+
+[UCaaS Provisioning] as [milestone_212] is colored in LightBlue
+
+[UCaaS SMS] as [milestone_395] is colored in LightBlue
+
+[Commvault to Connectwise Sync] as [milestone_528] is colored in LightBlue
+
+[milestone_207] -> [milestone_210]
+[milestone_207] -> [milestone_211]
+[milestone_212] -> [milestone_395]
+
+
+@endgantt
