@@ -1,5 +1,5 @@
 """
-Prints the clubhouse milestones in markdown by quarter for the current year
+Generates a plantuml gantt chart of the milestone timelines in clubhouse
 """
 
 
@@ -13,13 +13,10 @@ env.read_env()
 
 APITOKEN=env("APITOKEN")
 
-
 MILESTONES="https://api.clubhouse.io/api/v3/milestones"
 tokenurl = "?token=%s" % APITOKEN
 EPICS=MILESTONES + "/%d/epics"
-
-year = datetime.now().year
-roadmap = dict(q1=[], q2=[], q3=[], q4=[], other=[])
+LAST_DAYS = 365
 
 def get_date(milestone, key):
     dt = milestone.get(key, None)
@@ -34,12 +31,14 @@ def show_epics(milestone):
     if response.status_code == 200:
         epics = epic_response.json()
         for epic in epics:
-            epic['starts'] = get_date(epic, 'started_at')
-            epic['ends'] = get_date(epic, 'completed_at')
-            if epic.get('ends') == None:
-                epic['ends'] = get_date(epic, 'deadline')
-            show_dates(epic)
-            determine_color(epic)
+            completed=epic.get('completed', False)
+            if completed:
+               epic['start_tag'] = "<s>"
+               epic['end_tag'] = "</s>"
+            else:
+               epic['start_tag'] = ""
+               epic['end_tag'] = ""
+            print "***_ %(start_tag)s%(name)s%(end_tag)s" % epic
 
 
 def show_dates(milestone):
@@ -92,41 +91,33 @@ def determine_project_start(milestones):
         start_date = start
         break
     return start_date
-
-
+        
+   
 
 URL = MILESTONES + tokenurl
 response = requests.get(URL)
 if response.status_code == 200:
     milestones = response.json()
     today = datetime.now()
-    for milestone in milestones:
-        ends = get_date(milestone, 'completed_at')
-        quarter = None
-        if ends != None:
-            end_date = dateutil.parser.parse(ends)
-            if end_date.year == year:
-                if end_date.month < 4:
-                    quarter = 'q1'
-                elif end_date.month < 7:
-                    quarter = 'q2'
-                elif end_date.month < 11:
-                    quarter = 'q3'
-                else:
-                    quarter = 'q4'
-        else:
-            quarter = 'other'
-        if quarter != None:
-            roadmap[quarter].append(milestone.get('name', 'unknown'))
-    quarters = roadmap.keys()
-    quarters.sort()
+    last = today + timedelta(LAST_DAYS)
     print "@startmindmap"
-    print "* %s Roadmap" % year
-    for quarter in quarters:
-        print "** %s" % quarter
-        for item in roadmap.get(quarter, []):
-            print "***_ %s" % item
-        print ""
-
-        # show_epics(milestone)
+    proj_start = determine_project_start(milestones)
+    start_date = proj_start.strftime("%Y/%m/%d")
+    #print "project starts %s" % start_date
+    #print "printscale weekly"
+    #print "[Today] happens at %s" % today.strftime('%Y/%m/%d')
+    print "* Milestones"
+    half = len(milestones) / 2
+    switch_sides = True
+    count = 0
+    for milestone in milestones:
+        count += 1
+        if milestone.get('completed', False):  continue
+        if not milestone.get('started', False):
+            continue
+        print "** %(name)s" % milestone
+        show_epics(milestone)
+        if count > half and switch_sides:
+            switch_sides = False
+            print "\nleft side\n"
     print "@endmindmap"

@@ -7,6 +7,7 @@ import requests
 import dateutil.parser
 from datetime import datetime, timedelta
 from environs import Env
+import sys
 
 env = Env()
 env.read_env()
@@ -40,20 +41,43 @@ def show_epics(milestone):
 
 
 def show_dates(milestone):
-    if milestone.get('starts', None) != None:
-        start = dateutil.parser.parse(milestone.get('starts'))
+    start = get_date(milestone, 'started_at')
+  
+    if start == None:
+        if milestone.get('starts', None) != None:
+            start = dateutil.parser.parse(milestone.get('starts'))
+    else:
+        start = dateutil.parser.parse(start)
+    if start != None:
         milestone['start_date'] = start
         start_date = start.strftime("%Y/%m/%d")
+        stag = etag = ""
+        if milestone.get("completed", False):
+            stag = "<s>"
+            etag = "</s>"
         if start.date() <= last.date():
-            print "[%s] as [%s_%s] starts %s " % (milestone.get('name'), milestone.get('entity_type'), milestone.get('id'), start_date)
+            print "[%s%s%s] as [%s_%s] starts %s " % (stag,milestone.get('name'),etag, milestone.get('entity_type'), milestone.get('id'), start_date)
+            end = None
             if milestone.get('ends', None) != None:
                 end = dateutil.parser.parse(milestone.get('ends'))
+            elif milestone.get('deadline', None) != None:
+                end = dateutil.parser.parse(milestone.get('deadline'))
+            if end != None:
                 milestone['end_date'] = end
                 if not milestone.get("completed", False) and end.date() < today.date():
                     end = today.date()
-                print "[%s] ends %s" % (milestone.get('name'), end.strftime('%Y/%m/%d'))
+                print "[%s%s%s] ends %s" % (stag,milestone.get('name'), etag, end.strftime('%Y/%m/%d'))
+            else:
+                stats = milestone.get('stats',{})
+                duration = stats.get('num_points',0)
+                if duration > 0:
+                    print "[%s%s%s] lasts %d days" % (stag,milestone.get('name'), etag, duration)
 
 def determine_color(milestone):
+    stag = etag = ""
+    if milestone.get("completed", False):
+        stag = "<s>"
+        etag = "</s>"
     if milestone.get("completed", False):
         color = "LightGrey"
     elif milestone.get('started', False):
@@ -67,7 +91,7 @@ def determine_color(milestone):
     if not milestone.get("completed", False) and end_date is not None and end_date.date() < today.date():
         color = "Magenta"
 
-    print "[%s] as [%s_%s] is colored in %s\n" % (milestone.get('name'), milestone.get('entity_type'), milestone.get('id'), color)
+    print "[%s%s%s] as [%s_%s] is colored in %s\n" % (stag,milestone.get('name'),etag, milestone.get('entity_type'), milestone.get('id'), color)
 
 def insert(fname):
     try:
@@ -92,10 +116,16 @@ def determine_project_start(milestones):
         
    
 
-URL = MILESTONES + tokenurl
+single = False
+if len(sys.argv) == 2:
+    URL = MILESTONES + "/%s" % sys.argv[1] + tokenurl
+    single = True
+else:
+    URL = MILESTONES + tokenurl
 response = requests.get(URL)
 if response.status_code == 200:
     milestones = response.json()
+    if single:  milestones = [milestones]
     today = datetime.now()
     last = today + timedelta(LAST_DAYS)
     print "@startgantt"
@@ -112,6 +142,7 @@ if response.status_code == 200:
         milestone['ends'] = get_date(milestone, 'completed_at')
         show_dates(milestone)
         determine_color(milestone)
-        # show_epics(milestone)
+        if single: show_epics(milestone)
+        show_epics(milestone)
     insert('end')
     print "@endgantt"
