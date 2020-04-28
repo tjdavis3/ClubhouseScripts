@@ -120,13 +120,31 @@ if response.status_code == 200:
             roadmap[quarter].append(milestone.get('name', 'unknown'))
     quarters = roadmap.keys()
     quarters.sort()
-    print "@startmindmap"
-    print "* %s Roadmap" % year
+    #print "@startmindmap"
+    print "# %s Roadmap" % year
+    print "|",
+    max_items = 0
     for quarter in quarters:
-        print "** %s" % quarter
-        for item in roadmap.get(quarter, []):
-            print "***_ %s" % item
+        print " %s |" % quarter,
+        count = len(roadmap.get(quarter,[]))
+        if count > max_items:
+            max_items = count
+    print
+    print "|",
+
+    for x in range(len(quarters)):
+        print " --- |",
+    print
+
+    for x in range(max_items):
+        print "| ",
+        for quarter in quarters:
+            items = roadmap.get(quarter, [])
+            if len(items) > x:
+                print " %s" % items[x],
+            print " |",
+
         print ""
 
         # show_epics(milestone)
-    print "@endmindmap"
+    #print "@endmindmap"
