@@ -24,7 +24,13 @@ def get_date(milestone, key):
     if dt == None or dt == 'None' or dt == '' or dt == 'null':
         dt = milestone.get(key + '_override', '')
         if dt == None or dt == 'None' or dt == 'null' or dt == '':
-            dt = None
+            milestone_id = milestone.get("milestone_id", "-1")
+            if milestone_id == "-1":
+                dt = None
+            else:
+                parent = get_milestone(milestone_id)
+                dt = get_date(parent, 'completed_at')
+
     return dt
 
 def show_epics(milestone):
@@ -114,7 +120,13 @@ def determine_project_start(milestones):
         break
     return start_date
         
-   
+def get_milestone(id):   
+    URL = MILESTONES + "/%s" % id + tokenurl
+    response = requests.get(URL)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return {}
 
 single = False
 if len(sys.argv) == 2:
